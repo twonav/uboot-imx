@@ -340,12 +340,12 @@ static iomux_v3_cfg_t const usdhc1_pads[] = {
 	MX6_PAD_SD1_DATA2__USDHC1_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD1_DATA3__USDHC1_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 
-	/* VSELECT */
-	MX6_PAD_GPIO1_IO05__USDHC1_VSELECT | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	/* CD */
-	MX6_PAD_UART1_RTS_B__GPIO1_IO19 | MUX_PAD_CTRL(NO_PAD_CTRL),
-	/* RST_B */
-	MX6_PAD_GPIO1_IO09__GPIO1_IO09 | MUX_PAD_CTRL(NO_PAD_CTRL),
+//	/* VSELECT */
+//	MX6_PAD_GPIO1_IO05__USDHC1_VSELECT | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+//	/* CD */
+//	MX6_PAD_UART1_RTS_B__GPIO1_IO19 | MUX_PAD_CTRL(NO_PAD_CTRL),
+//	/* RST_B */
+//	MX6_PAD_GPIO1_IO09__GPIO1_IO09 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
 /*
@@ -401,6 +401,22 @@ static void setup_iomux_uart(void)
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
+#define PWM_BUZZER_GPIO	IMX_GPIO_NR(1, 9)
+
+static void buzzer_beep(void)
+{
+	int i = 0;
+	while(i < 100)
+	{
+		gpio_direction_output(PWM_BUZZER_GPIO, 0);
+        udelay(49);
+    	gpio_direction_output(PWM_BUZZER_GPIO, 1);
+		udelay(49);
+	    ++i;
+	}
+	gpio_direction_output(PWM_BUZZER_GPIO, 0);
+}
+
 #ifdef CONFIG_FSL_QSPI
 
 #define QSPI_PAD_CTRL1	\
@@ -439,7 +455,6 @@ static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 };
 
 #define USDHC1_CD_GPIO	IMX_GPIO_NR(1, 19)
-#define USDHC1_PWR_GPIO	IMX_GPIO_NR(1, 9)
 #define USDHC2_CD_GPIO	IMX_GPIO_NR(4, 5)
 #define USDHC2_PWR_GPIO	IMX_GPIO_NR(4, 10)
 
@@ -522,9 +537,9 @@ int board_mmc_init(bd_t *bis)
 			gpio_direction_input(USDHC1_CD_GPIO);
 			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC_CLK);
 
-			gpio_direction_output(USDHC1_PWR_GPIO, 0);
-			udelay(500);
-			gpio_direction_output(USDHC1_PWR_GPIO, 1);
+//			gpio_direction_output(USDHC1_PWR_GPIO, 0);
+//			udelay(500);
+//			gpio_direction_output(USDHC1_PWR_GPIO, 1);
 			break;
 		case 1:
 #if defined(CONFIG_MX6ULL_EVK_EMMC_REWORK)
@@ -759,7 +774,7 @@ static iomux_v3_cfg_t const lcd_pads[] = {
 	MX6_PAD_SNVS_TAMPER9__GPIO5_IO09 | MUX_PAD_CTRL(NO_PAD_CTRL),
 
 	/* Use GPIO for Brightness adjustment, duty cycle = period. */
-	MX6_PAD_GPIO1_IO08__GPIO1_IO08 | MUX_PAD_CTRL(NO_PAD_CTRL),
+	//MX6_PAD_GPIO1_IO08__GPIO1_IO08 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
 void do_enable_parallel_lcd(struct display_info_t const *dev)
@@ -774,7 +789,7 @@ void do_enable_parallel_lcd(struct display_info_t const *dev)
 	gpio_direction_output(IMX_GPIO_NR(5, 9) , 1);
 
 	/* Set Brightness to high */
-	gpio_direction_output(IMX_GPIO_NR(1, 8) , 1);
+	//gpio_direction_output(IMX_GPIO_NR(1, 8) , 1);
 }
 
 struct display_info_t const displays[] = {{
@@ -803,6 +818,8 @@ size_t display_count = ARRAY_SIZE(displays);
 int board_early_init_f(void)
 {
 	setup_iomux_uart();
+
+	//buzzer_beep();
 
 	return 0;
 }
