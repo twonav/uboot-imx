@@ -417,6 +417,17 @@ static void buzzer_beep(void)
 	gpio_direction_output(PWM_BUZZER_GPIO, 0);
 }
 
+#define WLAN_WL_ENABLE IMX_GPIO_NR(1, 29)
+#define WLAN_BT_ENABLE IMX_GPIO_NR(1, 30)
+#define WLAN_SWITCH IMX_GPIO_NR(1, 31)
+
+static void setup_gpios(void)
+{
+	gpio_direction_output(WLAN_WL_ENABLE, 0);
+	gpio_direction_output(WLAN_BT_ENABLE, 0);
+	gpio_direction_output(WLAN_SWITCH, 0);
+}
+
 #ifdef CONFIG_FSL_QSPI
 
 #define QSPI_PAD_CTRL1	\
@@ -820,6 +831,7 @@ int board_early_init_f(void)
 	setup_iomux_uart();
 
 	//buzzer_beep();
+	setup_gpios();
 
 	return 0;
 }
