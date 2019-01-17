@@ -72,6 +72,7 @@
 #endif
 
 /* I2C configs */
+#define CONFIG_CMD_I2C
 #ifdef CONFIG_CMD_I2C
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
@@ -361,6 +362,9 @@
 #endif
 
 #define CONFIG_IOMUX_LPSR
+
+#define CONFIG_PWM_IMX
+#define CONFIG_IMX6_PWM_PER_CLK	66000000
 
 #if defined(CONFIG_ANDROID_SUPPORT)
 #include "mx6ullevk_android.h"

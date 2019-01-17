@@ -29,6 +29,7 @@
 #include <usb.h>
 #include <usb/ehci-fsl.h>
 #include <asm/imx-common/video.h>
+#include <pwm.h>
 
 #ifdef CONFIG_FSL_FASTBOOT
 #include <fsl_fastboot.h>
@@ -87,6 +88,10 @@ DECLARE_GLOBAL_DATA_PTR;
 #define OTG_ID_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE |		\
 	PAD_CTL_PUS_47K_UP  | PAD_CTL_SPEED_LOW |		\
 	PAD_CTL_DSE_80ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
+
+
+#define PWM2_PAD_CTRL ( PAD_CTL_PUS_100K_DOWN  | PAD_CTL_SPEED_MED |		\
+	PAD_CTL_DSE_40ohm   | PAD_CTL_SRE_SLOW | PAD_CTL_ODE | PAD_CTL_HYS)
 
 #define IOX_SDI IMX_GPIO_NR(5, 10)
 #define IOX_STCP IMX_GPIO_NR(5, 7)
@@ -401,20 +406,21 @@ static void setup_iomux_uart(void)
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
-#define PWM_BUZZER_GPIO	IMX_GPIO_NR(1, 9)
-
 static void buzzer_beep(void)
 {
-	int i = 0;
-	while(i < 100)
+	int ok = pwm_init(1, NULL, NULL);
+	if(ok != 0)
 	{
-		gpio_direction_output(PWM_BUZZER_GPIO, 0);
-        udelay(49);
-    	gpio_direction_output(PWM_BUZZER_GPIO, 1);
-		udelay(49);
-	    ++i;
+		printf("Warning: Cannot init pwm");
 	}
-	gpio_direction_output(PWM_BUZZER_GPIO, 0);
+	ok = pwm_config(1, 125000, 250000);
+	if(ok != 0)
+	{
+		printf("Warning: Cannot config pwm");
+	}
+	pwm_enable(1);
+	udelay(100);
+	pwm_disable(1);
 }
 
 #define WLAN_WL_ENABLE IMX_GPIO_NR(1, 29)
@@ -830,8 +836,8 @@ int board_early_init_f(void)
 {
 	setup_iomux_uart();
 
-	//buzzer_beep();
 	setup_gpios();
+	buzzer_beep();
 
 	return 0;
 }
@@ -864,6 +870,8 @@ int board_init(void)
 #ifdef CONFIG_NAND_MXS
 	setup_gpmi_nand();
 #endif
+
+	imx_iomux_v3_setup_pad(MX6_PAD_GPIO1_IO09__PWM2_OUT | MUX_PAD_CTRL(PWM2_PAD_CTRL));
 
 	return 0;
 }
