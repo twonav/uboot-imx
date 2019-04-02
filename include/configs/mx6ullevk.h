@@ -366,4 +366,7 @@
 #include "mx6ullevk_android.h"
 #endif
 
+#define CONFIG_PWM_IMX
+#define CONFIG_IMX6_PWM_PER_CLK	66000000
+
 #endif

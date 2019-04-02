@@ -37,6 +37,8 @@
 #endif
 #endif /*CONFIG_FSL_FASTBOOT*/
 
+#include <pwm.h>
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #define UART_PAD_CTRL  (PAD_CTL_PKE | PAD_CTL_PUE |		\
@@ -396,25 +398,34 @@ static iomux_v3_cfg_t const usdhc2_dat3_pads[] = {
 };
 #endif
 
+static iomux_v3_cfg_t const buzzer_pads[] = {
+	MX6_PAD_GPIO1_IO09__PWM2_OUT | MUX_PAD_CTRL(NO_PAD_CTRL),
+};
+
 static void setup_iomux_uart(void)
 {
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
-#define PWM_BUZZER_GPIO	IMX_GPIO_NR(1, 9)
+#define BUZZER_TIME_MS 70
+#define BUZZER_DUTTY_CYCLE_NS 200000
+#define BUZZER_PERIOD_NS 250000
 
 static void buzzer_beep(void)
 {
-	int i = 0;
-	while(i < 100)
-	{
-		gpio_direction_output(PWM_BUZZER_GPIO, 0);
-        udelay(49);
-    	gpio_direction_output(PWM_BUZZER_GPIO, 1);
-		udelay(49);
-	    ++i;
-	}
-	gpio_direction_output(PWM_BUZZER_GPIO, 0);
+	imx_iomux_v3_setup_multiple_pads(buzzer_pads,ARRAY_SIZE(buzzer_pads));
+	if (pwm_init(1, 0, 0))
+		goto error;
+	if (pwm_config(1, BUZZER_DUTTY_CYCLE_NS, BUZZER_PERIOD_NS))
+		goto error;
+	if (pwm_enable(1))
+		goto error;
+	mdelay(BUZZER_TIME_MS);
+	pwm_disable(1);
+	return;
+error:
+	puts("error init pwm for buzzer\n");
+	return;
 }
 
 #define WLAN_WL_ENABLE IMX_GPIO_NR(1, 29)
@@ -830,7 +841,6 @@ int board_early_init_f(void)
 {
 	setup_iomux_uart();
 
-	//buzzer_beep();
 	setup_gpios();
 
 	return 0;
@@ -838,6 +848,7 @@ int board_early_init_f(void)
 
 int board_init(void)
 {
+	buzzer_beep();
 	/* Address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
 
