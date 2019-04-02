@@ -407,18 +407,20 @@ static void setup_iomux_uart(void)
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
+#define BUZZER_TIME_MS 70
+#define BUZZER_DUTTY_CYCLE_NS 200000
+#define BUZZER_PERIOD_NS 250000
+
 static void buzzer_beep(void)
 {
 	imx_iomux_v3_setup_multiple_pads(buzzer_pads,ARRAY_SIZE(buzzer_pads));
-	/* enable backlight PWM 2 */
 	if (pwm_init(1, 0, 0))
 		goto error;
-	/* duty cycle 200000ns, period: 250000ns */
-	if (pwm_config(1, 200000, 250000))
+	if (pwm_config(1, BUZZER_DUTTY_CYCLE_NS, BUZZER_PERIOD_NS))
 		goto error;
 	if (pwm_enable(1))
 		goto error;
-	mdelay(100);
+	mdelay(BUZZER_TIME_MS);
 	pwm_disable(1);
 	return;
 error:
