@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "2016.03-ge80683a-teo"
+#define UBOOT_VERSION "2016.03-ge80683a"
 
 /* uncomment for PLUGIN mode support */
 /* #define CONFIG_USE_PLUGIN */
