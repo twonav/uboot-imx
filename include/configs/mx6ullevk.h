@@ -14,6 +14,8 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
+#define UBOOT_VERSION "2016.03-ge80683a-teo"
+
 /* uncomment for PLUGIN mode support */
 /* #define CONFIG_USE_PLUGIN */
 
@@ -143,7 +145,8 @@
 	"mmcautodetect=yes\0" \
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		CONFIG_BOOTARGS_CMA_SIZE \
-		"root=${mmcroot}\0" \
+		"root=${mmcroot} " \
+		"u-boot="UBOOT_VERSION"\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
