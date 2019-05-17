@@ -14,6 +14,8 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
+#define UBOOT_VERSION "2016.03-ge80683a-twonav-1"
+
 /* uncomment for PLUGIN mode support */
 /* #define CONFIG_USE_PLUGIN */
 
@@ -144,7 +146,8 @@
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		CONFIG_BOOTARGS_CMA_SIZE \
 		"root=${mmcroot} " \
-		"consoleblank=0  vt.global_cursor_default=0\0" \
+		"consoleblank=0  vt.global_cursor_default=0 " \
+    "u-boot="UBOOT_VERSION"\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
