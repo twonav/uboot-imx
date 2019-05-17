@@ -146,7 +146,8 @@
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		CONFIG_BOOTARGS_CMA_SIZE \
 		"root=${mmcroot} " \
-		"u-boot="UBOOT_VERSION"\0" \
+		"consoleblank=0  vt.global_cursor_default=0 " \
+    "u-boot="UBOOT_VERSION"\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
@@ -368,5 +369,8 @@
 #if defined(CONFIG_ANDROID_SUPPORT)
 #include "mx6ullevk_android.h"
 #endif
+
+#define CONFIG_PWM_IMX
+#define CONFIG_IMX6_PWM_PER_CLK	66000000
 
 #endif
