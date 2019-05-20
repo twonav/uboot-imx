@@ -15,6 +15,7 @@
 #include <asm/imx-common/gpio.h>
 
 #define UBOOT_VERSION "2016.03-ge80683a-twonav-1"
+#define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
 /* #define CONFIG_USE_PLUGIN */
