@@ -399,7 +399,7 @@ static iomux_v3_cfg_t const usdhc2_dat3_pads[] = {
 #endif
 
 static iomux_v3_cfg_t const buzzer_pads[] = {
-	MX6_PAD_GPIO1_IO09__PWM2_OUT | MUX_PAD_CTRL(NO_PAD_CTRL),
+	MX6_PAD_GPIO1_IO08__PWM1_OUT | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
 static void setup_iomux_uart(void)
@@ -410,18 +410,19 @@ static void setup_iomux_uart(void)
 #define BUZZER_TIME_MS 70
 #define BUZZER_DUTTY_CYCLE_NS 200000
 #define BUZZER_PERIOD_NS 250000
+#define BUZZER_ID 0
 
 static void buzzer_beep(void)
 {
 	imx_iomux_v3_setup_multiple_pads(buzzer_pads,ARRAY_SIZE(buzzer_pads));
-	if (pwm_init(1, 0, 0))
+	if (pwm_init(BUZZER_ID, 0, 0))
 		goto error;
-	if (pwm_config(1, BUZZER_DUTTY_CYCLE_NS, BUZZER_PERIOD_NS))
+	if (pwm_config(BUZZER_ID, BUZZER_DUTTY_CYCLE_NS, BUZZER_PERIOD_NS))
 		goto error;
-	if (pwm_enable(1))
+	if (pwm_enable(BUZZER_ID))
 		goto error;
 	mdelay(BUZZER_TIME_MS);
-	pwm_disable(1);
+	pwm_disable(BUZZER_ID);
 	return;
 error:
 	puts("error init pwm for buzzer\n");
