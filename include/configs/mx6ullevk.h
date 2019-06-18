@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "2016.03-gec6219f7-twonav-v1.0.0"
+#define UBOOT_VERSION "2016.03-gec6219f7-twonav-v1.0.1"
 #define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
@@ -147,8 +147,9 @@
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		CONFIG_BOOTARGS_CMA_SIZE \
 		"root=${mmcroot} " \
-		"consoleblank=0  vt.global_cursor_default=0 " \
-    "u-boot="UBOOT_VERSION"\0" \
+		"consoleblank=0 vt.global_cursor_default=0 " \
+		"hwtype=${hwtype} " \
+		"u-boot="UBOOT_VERSION"\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
