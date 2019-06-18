@@ -890,9 +890,9 @@ static const struct boot_mode board_boot_modes[] = {
 #endif
 
 /* HW detection by GPIO
-- Temporary: MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO03 Keyboard right-most button
+- Temporary: MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO00 unused GPIO that is 0 by defualt
 */
-#define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(5, 3)
+#define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(5, 0)
 
 int board_late_init(void)
 {
@@ -906,7 +906,7 @@ int board_late_init(void)
 	setenv("board_name", "STONEHENGE");
 
 	hw_type_gpio = gpio_get_value(HARDWARE_TYPE_GPIO);
-	if (hw_type_gpio)
+	if (!hw_type_gpio)
 		setenv("hwtype", "Trail");
 	else
 		setenv("hwtype", "Aventura");
