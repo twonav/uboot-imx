@@ -698,7 +698,7 @@ static iomux_v3_cfg_t const fec2_pads[] = {
 
 	MX6_PAD_ENET2_RX_DATA0__ENET2_RDATA00 | MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_ENET2_RX_DATA1__ENET2_RDATA01 | MUX_PAD_CTRL(ENET_PAD_CTRL),
-	MX6_PAD_ENET2_RX_EN__ENET2_RX_EN | MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_ENET2_RX_EN__GPIO2_IO10 | MUX_PAD_CTRL(NO_PAD_CTRL),
 	MX6_PAD_ENET2_RX_ER__ENET2_RX_ER | MUX_PAD_CTRL(ENET_PAD_CTRL),
 };
 
@@ -890,9 +890,12 @@ static const struct boot_mode board_boot_modes[] = {
 #endif
 
 /* HW detection by GPIO
-- Temporary: MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO00 unused GPIO that is 0 by defualt
+- Temporary solution: MX6_PAD_ENET2_RX_EN__GPIO2_IO10 pin
+- FTTB this pin is "on air" and the most probable value
+- when read is 0. When the HW modification is made it
+- will be 0 for Trail and 1 for Aventura (to be decided).
 */
-#define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(5, 0)
+#define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(2, 10)
 
 int board_late_init(void)
 {
