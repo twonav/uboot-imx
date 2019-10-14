@@ -890,17 +890,34 @@ static const struct boot_mode board_boot_modes[] = {
 };
 #endif
 
-/* HW detection by GPIO
-- Temporary solution: MX6_PAD_ENET2_RX_EN__GPIO2_IO10 pin
-- FTTB this pin is "on air" and the most probable value
-- when read is 0. When the HW modification is made it
-- will be 0 for Trail and 1 for Aventura (to be decided).
-*/
 #define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(2, 10)
+
+#define BOOT_MODE_GPIO_KB_TR	IMX_GPIO_NR(5, 1)
+#define BOOT_MODE_GPIO_KB_TL	IMX_GPIO_NR(5, 2)
+#define BOOT_MODE_GPIO_KB_BR	IMX_GPIO_NR(5, 3)
+#define BOOT_MODE_GPIO_KB_BL	IMX_GPIO_NR(5, 4)
+
+bool DetectBootUsbMode() 
+{
+	int key1pressed = gpio_get_value(BOOT_MODE_GPIO_KB_TR);
+	int key2pressed = gpio_get_value(BOOT_MODE_GPIO_KB_BR);
+	int key3pressed = gpio_get_value(BOOT_MODE_GPIO_KB_BL);
+	int key4pressed = gpio_get_value(BOOT_MODE_GPIO_KB_TL);
+
+	bool enterBootMode = (key1pressed && !key2pressed && 
+						 key3pressed && !key4pressed);
+	return enterBootMode;
+}
 
 int board_late_init(void)
 {
 	int hw_type_gpio = 0;
+
+	bool bmode_usb = DetectBootUsbMode();
+	if(bmode_usb) {
+		boot_mode_apply(0x01);
+		do_reset(NULL, 0, 0, NULL);
+	}
 
 #ifdef CONFIG_CMD_BMODE
 	add_board_boot_modes(board_boot_modes);
@@ -918,9 +935,11 @@ int board_late_init(void)
 	setenv("board_rev", "v0");
 #endif
 
+
 #ifdef CONFIG_ENV_IS_IN_MMC
 	board_late_mmc_env_init();
 #endif
+
 
 	set_wdog_reset((struct wdog_regs *)WDOG1_BASE_ADDR);
 
