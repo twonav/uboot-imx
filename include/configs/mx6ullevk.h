@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "2019.10-d2c5daceb-twonav-v1.0.3"
+#define UBOOT_VERSION "2019.10-1f14fb2-twonav-v1.0.3"
 #define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
