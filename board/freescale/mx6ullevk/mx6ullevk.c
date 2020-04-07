@@ -909,10 +909,14 @@ bool DetectBootUsbMode()
 	return enterBootMode;
 }
 
+#ifdef TWONAV_DEVICE
+	const char* twonav_device = TWONAV_DEVICE;
+#else
+	const char* twonav_device = "unknown";
+#endif
+
 int board_late_init(void)
 {
-	int hw_type_gpio = 0;
-
 	bool bmode_usb = DetectBootUsbMode();
 	if(bmode_usb) {
 		boot_mode_apply(0x01);
@@ -925,13 +929,7 @@ int board_late_init(void)
 
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	setenv("board_name", "STONEHENGE");
-
-	hw_type_gpio = gpio_get_value(HARDWARE_TYPE_GPIO);
-	if (!hw_type_gpio)
-		setenv("hwtype", "Trail");
-	else
-		setenv("hwtype", "Aventura");
-
+	setenv("hwtype", twonav_device);	
 	setenv("board_rev", "v0");
 #endif
 
