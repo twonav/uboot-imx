@@ -148,7 +148,7 @@
 		CONFIG_BOOTARGS_CMA_SIZE \
 		"root=${mmcroot} " \
 		"consoleblank=0 vt.global_cursor_default=0 " \
-		"hwtype=${hwtype} " \
+		"bd7181x-power.hwtype=${hwtype} " \
 		"u-boot="UBOOT_VERSION"\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
