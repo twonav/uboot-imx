@@ -198,7 +198,7 @@
 		"fi;\0" \
 		"findfdt="\
 			"if test $fdt_file = undefined; then " \
-				"setenv fdt_file imx6ull-var-dart-emmc_wifi.dtb; " \
+				"setenv fdt_file imx6ull-var-dart-twonav-trail-2018.dtb; " \
 			"fi;\0" \
 
 #define CONFIG_BOOTCOMMAND \
