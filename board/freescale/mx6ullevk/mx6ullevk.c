@@ -897,7 +897,7 @@ static const struct boot_mode board_boot_modes[] = {
 #define BOOT_MODE_GPIO_KB_BR	IMX_GPIO_NR(5, 3)
 #define BOOT_MODE_GPIO_KB_BL	IMX_GPIO_NR(5, 4)
 
-bool DetectBootUsbMode() 
+bool DetectBootUsbMode(void) 
 {
 	int key1pressed = gpio_get_value(BOOT_MODE_GPIO_KB_TR);
 	int key2pressed = gpio_get_value(BOOT_MODE_GPIO_KB_BR);
@@ -911,8 +911,6 @@ bool DetectBootUsbMode()
 
 int board_late_init(void)
 {
-	int hw_type_gpio = 0;
-
 	bool bmode_usb = DetectBootUsbMode();
 	if(bmode_usb) {
 		boot_mode_apply(0x01);
@@ -926,11 +924,15 @@ int board_late_init(void)
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	setenv("board_name", "STONEHENGE");
 
-	hw_type_gpio = gpio_get_value(HARDWARE_TYPE_GPIO);
-	if (!hw_type_gpio)
-		setenv("hwtype", "Trail");
-	else
-		setenv("hwtype", "Aventura");
+#ifdef TWONAV_DEVICE
+	const char* tndev = TWONAV_DEVICE;
+	char dtb_file [256];
+	sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
+	setenv("fdt_file", dtb_file);
+	setenv("hwtype", tndev);	
+#else
+	setenv("hwtype", "unknown");		
+#endif
 
 	setenv("board_rev", "v0");
 #endif
