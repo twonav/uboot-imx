@@ -892,20 +892,45 @@ static const struct boot_mode board_boot_modes[] = {
 
 #define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(2, 10)
 
-#define BOOT_MODE_GPIO_KB_TR	IMX_GPIO_NR(5, 1)
-#define BOOT_MODE_GPIO_KB_TL	IMX_GPIO_NR(5, 2)
-#define BOOT_MODE_GPIO_KB_BR	IMX_GPIO_NR(5, 3)
-#define BOOT_MODE_GPIO_KB_BL	IMX_GPIO_NR(5, 4)
+// stonehenge small board buttons (crosstop)
+#define BOOT_MODE_GPIO_SS_TR		IMX_GPIO_NR(2, 0)
+#define BOOT_MODE_GPIO_SS_TL		IMX_GPIO_NR(2, 1)
+#define BOOT_MODE_GPIO_SS_BR		IMX_GPIO_NR(5, 1)
+#define BOOT_MODE_GPIO_SS_BL		IMX_GPIO_NR(5, 2)
+
+// stonehenge big board buttons (trail, aventura)
+#define BOOT_MODE_GPIO_SB_KB_TL		IMX_GPIO_NR(5, 4)
+#define BOOT_MODE_GPIO_SB_KB_ML		IMX_GPIO_NR(5, 2)
+#define BOOT_MODE_GPIO_SB_KB_MR		IMX_GPIO_NR(5, 1)
+#define BOOT_MODE_GPIO_SB_KB_TR		IMX_GPIO_NR(5, 3)
 
 bool DetectBootUsbMode(void) 
 {
-	int key1pressed = gpio_get_value(BOOT_MODE_GPIO_KB_TR);
-	int key2pressed = gpio_get_value(BOOT_MODE_GPIO_KB_BR);
-	int key3pressed = gpio_get_value(BOOT_MODE_GPIO_KB_BL);
-	int key4pressed = gpio_get_value(BOOT_MODE_GPIO_KB_TL);
+	const char* tndev = TWONAV_DEVICE;
+	int key1pressed = false;
+	int key2pressed = false;
+	int key3pressed = false;
+	int key4pressed = false;
+	bool enterBootMode = false;
 
-	bool enterBootMode = (key1pressed && !key2pressed && 
-						 key3pressed && !key4pressed);
+	if(strstr(tndev, "crosstop") != NULL) 
+	{
+		key1pressed = gpio_get_value(BOOT_MODE_GPIO_SS_TL);
+		key2pressed = gpio_get_value(BOOT_MODE_GPIO_SS_BR);
+		key3pressed = gpio_get_value(BOOT_MODE_GPIO_SS_BL);
+		enterBootMode = (key1pressed && key2pressed && !key3pressed);
+	}
+	else 
+	{
+		key1pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_TR);
+		key2pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_ML);
+		key3pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_MR);
+		key4pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_TL);
+		enterBootMode = (!key1pressed && key2pressed && 
+						 !key3pressed && key4pressed);
+	}
+
+	
 	return enterBootMode;
 }
 
