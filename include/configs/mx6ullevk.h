@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "2019.10-1f14fb2-twonav-v1.0.3"
+#define UBOOT_VERSION "2020.4-4e7d5741-twonav-v1.1.0"
 #define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
@@ -198,7 +198,7 @@
 		"fi;\0" \
 		"findfdt="\
 			"if test $fdt_file = undefined; then " \
-				"setenv fdt_file imx6ull-var-dart-emmc_wifi.dtb; " \
+				"setenv fdt_file imx6ull-var-dart-twonav-trail-2018.dtb; " \
 			"fi;\0" \
 
 #define CONFIG_BOOTCOMMAND \
