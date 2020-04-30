@@ -915,17 +915,17 @@ bool DetectBootUsbMode(void)
 
 	if(strstr(tndev, "crosstop") != NULL) 
 	{
-		key1pressed = gpio_get_value(BOOT_MODE_GPIO_SS_TL);
-		key2pressed = gpio_get_value(BOOT_MODE_GPIO_SS_BR);
-		key3pressed = gpio_get_value(BOOT_MODE_GPIO_SS_BL);
+		key1pressed = !gpio_get_value(BOOT_MODE_GPIO_SS_TL);
+		key2pressed = !gpio_get_value(BOOT_MODE_GPIO_SS_BR);
+		key3pressed = !gpio_get_value(BOOT_MODE_GPIO_SS_BL);
 		enterBootMode = (key1pressed && key2pressed && !key3pressed);
 	}
 	else 
 	{
-		key1pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_TL);
-		key2pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_ML);
-		key3pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_MR);
-		key4pressed = gpio_get_value(BOOT_MODE_GPIO_SB_KB_TR);
+		key1pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_TL);
+		key2pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_ML);
+		key3pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_MR);
+		key4pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_TR);
 		enterBootMode = (!key1pressed && key2pressed && 
 						 !key3pressed && key4pressed);
 	}
