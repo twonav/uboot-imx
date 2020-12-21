@@ -146,10 +146,12 @@
 	"mmcautodetect=yes\0" \
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		CONFIG_BOOTARGS_CMA_SIZE \
-		"root=${mmcroot} " \
+		"root=${tnrootpart} " \
 		"consoleblank=0 vt.global_cursor_default=0 " \
 		"bd7181x-power.hwtype=${hwtype} " \
 		"logo.hwtype=${hwtype} " \
+		"fsck.repair=yes " \
+		"roofstype=ext4 " \
 		"u-boot="UBOOT_VERSION"\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \

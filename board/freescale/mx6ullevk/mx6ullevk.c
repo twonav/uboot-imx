@@ -948,7 +948,9 @@ int board_late_init(void)
 
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	setenv("board_name", "STONEHENGE");
-
+	setenv("tnrootpart","/dev/mmcblk1p2 rootwait ro");
+	setenv("rootfstype","ext4");
+	setenv("fsck.repair","yes");
 #ifdef TWONAV_DEVICE
 	const char* tndev = TWONAV_DEVICE;
 	char dtb_file [256];
