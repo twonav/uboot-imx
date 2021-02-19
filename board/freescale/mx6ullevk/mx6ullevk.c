@@ -892,55 +892,66 @@ static const struct boot_mode board_boot_modes[] = {
 
 #define HARDWARE_TYPE_GPIO	IMX_GPIO_NR(2, 10)
 
-// stonehenge small board buttons (crosstop)
-#define BOOT_MODE_GPIO_SS_TR		IMX_GPIO_NR(2, 0)
-#define BOOT_MODE_GPIO_SS_TL		IMX_GPIO_NR(2, 1)
-#define BOOT_MODE_GPIO_SS_BR		IMX_GPIO_NR(5, 1)
-#define BOOT_MODE_GPIO_SS_BL		IMX_GPIO_NR(5, 2)
+// stonehenge board buttons (crosstop)
+#define BOOT_MODE_KEY_2_0		IMX_GPIO_NR(2, 0)
+#define BOOT_MODE_KEY_2_1		IMX_GPIO_NR(2, 1)
+#define BOOT_MODE_KEY_5_1		IMX_GPIO_NR(5, 1)
+#define BOOT_MODE_KEY_5_2		IMX_GPIO_NR(5, 2)
+#define BOOT_MODE_KEY_5_3		IMX_GPIO_NR(5, 3)
+#define BOOT_MODE_KEY_5_4		IMX_GPIO_NR(5, 4)
 
-// stonehenge big board buttons (trail, aventura)
-#define BOOT_MODE_GPIO_SB_KB_TL		IMX_GPIO_NR(5, 4)
-#define BOOT_MODE_GPIO_SB_KB_ML		IMX_GPIO_NR(5, 2)
-#define BOOT_MODE_GPIO_SB_KB_MR		IMX_GPIO_NR(5, 1)
-#define BOOT_MODE_GPIO_SB_KB_TR		IMX_GPIO_NR(5, 3)
+#define ID_CROSSTOP		"crosstop"
+#define ID_AVENTURA		"aventura"
+#define ID_TRAIL		"trail"
+#define ID_FACTORY		"factory"
 
-bool DetectBootUsbMode(void) 
+
+void SelectBootMode(void) 
 {
-	const char* tndev = TWONAV_DEVICE;
-	int key1pressed = false;
-	int key2pressed = false;
-	int key3pressed = false;
-	int key4pressed = false;
-	bool enterBootMode = false;
-
-	if(strstr(tndev, "crosstop") != NULL) 
-	{
-		key1pressed = !gpio_get_value(BOOT_MODE_GPIO_SS_TL);
-		key2pressed = !gpio_get_value(BOOT_MODE_GPIO_SS_BR);
-		key3pressed = !gpio_get_value(BOOT_MODE_GPIO_SS_BL);
-		enterBootMode = (key1pressed && key2pressed && !key3pressed);
-	}
-	else 
-	{
-		key1pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_TL);
-		key2pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_ML);
-		key3pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_MR);
-		key4pressed = !gpio_get_value(BOOT_MODE_GPIO_SB_KB_TR);
-		enterBootMode = (!key1pressed && key2pressed && 
-						 !key3pressed && key4pressed);
-	}
-
+	int key20 = !gpio_get_value(BOOT_MODE_KEY_2_0);
+	int key21 = !gpio_get_value(BOOT_MODE_KEY_2_1);
+	int key51 = !gpio_get_value(BOOT_MODE_KEY_5_1);
+	int key52 = !gpio_get_value(BOOT_MODE_KEY_5_2);
+	int key53 = !gpio_get_value(BOOT_MODE_KEY_5_3);
+	int key54 = !gpio_get_value(BOOT_MODE_KEY_5_4);
 	
-	return enterBootMode;
+	bool bootmode = (key21 && key51 && (!key52));
+	bool crossmode = (key21 | key51 | key52);
+	bool trailmode = (key53 | key54);
+	bool aventuramode = (!crossmode && !trailmode);
+
+	if(bootmode) {
+		boot_mode_apply(0x01);
+		do_reset(NULL, 0, 0, NULL);
+		return;
+	}
+
+	#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+		#ifdef TWONAV_DEVICE
+			char tndev [64];
+			char dtb_file [64];
+
+			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {				
+				sprintf(tndev, "twonav-%s-2018", (crossmode ? 
+					ID_CROSSTOP : (trailmode ? ID_TRAIL : ID_AVENTURA)));
+			}
+			else {
+				sprintf(tndev, TWONAV_DEVICE);
+			}		
+			sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
+
+			setenv("fdt_file", dtb_file);
+			setenv("hwtype", tndev);	
+		#else			
+			setenv("hwtype", "unknown");		
+		#endif
+	#endif
 }
 
 int board_late_init(void)
 {
-	bool bmode_usb = DetectBootUsbMode();
-	if(bmode_usb) {
-		boot_mode_apply(0x01);
-		do_reset(NULL, 0, 0, NULL);
-	}
+
+	SelectBootMode();
 
 #ifdef CONFIG_CMD_BMODE
 	add_board_boot_modes(board_boot_modes);
@@ -951,16 +962,6 @@ int board_late_init(void)
 	setenv("tnrootpart","/dev/mmcblk1p2 rootwait ro");
 	setenv("rootfstype","ext4");
 	setenv("fsck.repair","yes");
-#ifdef TWONAV_DEVICE
-	const char* tndev = TWONAV_DEVICE;
-	char dtb_file [256];
-	sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
-	setenv("fdt_file", dtb_file);
-	setenv("hwtype", tndev);	
-#else
-	setenv("hwtype", "unknown");		
-#endif
-
 	setenv("board_rev", "v0");
 #endif
 
