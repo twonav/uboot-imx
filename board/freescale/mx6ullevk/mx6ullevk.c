@@ -900,6 +900,7 @@ static const struct boot_mode board_boot_modes[] = {
 #define BOOT_MODE_KEY_5_3		IMX_GPIO_NR(5, 3)
 #define BOOT_MODE_KEY_5_4		IMX_GPIO_NR(5, 4)
 
+#define ID_CROSSXL		"crossxl"
 #define ID_CROSSTOP		"crosstop"
 #define ID_AVENTURA		"aventura"
 #define ID_TRAIL		"trail"
@@ -916,9 +917,10 @@ void SelectBootMode(void)
 	int key54 = !gpio_get_value(BOOT_MODE_KEY_5_4);
 	
 	bool bootmode = (key21 && key51 && (!key52));
-	bool crossmode = (key21 | key51 | key52);
+	bool crosstopmode = (key21 | key51);
+	bool crossxlmode = key52;
 	bool trailmode = (key53 | key54);
-	bool aventuramode = (!crossmode && !trailmode);
+	bool aventuramode = (!crosstopmode && !trailmode && !crossxlmode);
 
 	if(bootmode) {
 		boot_mode_apply(0x01);
@@ -930,10 +932,16 @@ void SelectBootMode(void)
 		#ifdef TWONAV_DEVICE
 			char tndev [64];
 			char dtb_file [64];
+			const char* id = NULL;
 
-			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {				
-				sprintf(tndev, "twonav-%s-2018", (crossmode ? 
-					ID_CROSSTOP : (trailmode ? ID_TRAIL : ID_AVENTURA)));
+			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {	
+				
+				if(crosstopmode) 			id = ID_CROSSTOP;		
+				else if(crossxlmode) 	id = ID_CROSSXL;
+				else if(trailmode) 	id = ID_TRAIL;
+				else 					id = ID_AVENTURA;
+
+				sprintf(tndev, "twonav-%s-2018", id);
 			}
 			else {
 				sprintf(tndev, TWONAV_DEVICE);
