@@ -900,7 +900,7 @@ static const struct boot_mode board_boot_modes[] = {
 #define BOOT_MODE_KEY_5_3		IMX_GPIO_NR(5, 3)
 #define BOOT_MODE_KEY_5_4		IMX_GPIO_NR(5, 4)
 
-#define ID_CROSSXL		"crossxl"
+#define ID_TERRA		"terra"
 #define ID_CROSSTOP		"crosstop"
 #define ID_AVENTURA		"aventura"
 #define ID_TRAIL		"trail"
@@ -918,9 +918,9 @@ void SelectBootMode(void)
 	
 	bool bootmode = (key21 && key51 && (!key52));
 	bool crosstopmode = (key21 | key51);
-	bool crossxlmode = key52;
+	bool terramode = key52;
 	bool trailmode = (key53 | key54);
-	bool aventuramode = (!crosstopmode && !trailmode && !crossxlmode);
+	bool aventuramode = (!crosstopmode && !trailmode && !terramode);
 
 	if(bootmode) {
 		boot_mode_apply(0x01);
@@ -936,9 +936,9 @@ void SelectBootMode(void)
 
 			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {	
 				
-				if(crosstopmode) 			id = ID_CROSSTOP;		
-				else if(crossxlmode) 	id = ID_CROSSXL;
-				else if(trailmode) 	id = ID_TRAIL;
+				if(crosstopmode) 		id = ID_CROSSTOP;		
+				else if(terramode)		id = ID_TERRA;
+				else if(trailmode)		id = ID_TRAIL;
 				else 					id = ID_AVENTURA;
 
 				sprintf(tndev, "twonav-%s-2018", id);
