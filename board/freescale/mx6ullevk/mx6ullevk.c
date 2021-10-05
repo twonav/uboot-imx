@@ -907,6 +907,8 @@ static const struct boot_mode board_boot_modes[] = {
 #define ID_FACTORY		"factory"
 
 
+static bool usb_drive_boot = false;
+
 void SelectBootMode(void) 
 {
 	int key20 = !gpio_get_value(BOOT_MODE_KEY_2_0);
@@ -921,6 +923,8 @@ void SelectBootMode(void)
 	bool terramode = key52;
 	bool trailmode = (key53 | key54);
 	bool aventuramode = (!crosstopmode && !trailmode && !terramode);
+
+	usb_drive_boot = (key21 && key51 && key52);
 
 	if(bootmode) {
 		boot_mode_apply(0x01);
@@ -967,7 +971,17 @@ int board_late_init(void)
 
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	setenv("board_name", "STONEHENGE");
-	setenv("tnrootpart","/dev/mmcblk1p2 rootwait ro");
+
+	if(usb_drive_boot) {
+		printf("Booting from Usb Drive 0:1. rootfs on /dev/sda2 \n");
+		setenv("tnrootpart","/dev/sda2 rootwait ro");
+		setenv("loadimage", "usb start;ext4load usb 0:1 ${loadaddr} ${image}");
+		setenv("loadfdt", "ext4load usb 0:1 ${fdt_addr} ${fdt_file}");
+	}
+	else {
+		setenv("tnrootpart","/dev/mmcblk1p2 rootwait ro");
+	}
+
 	setenv("rootfstype","ext4");
 	setenv("fsck.repair","yes");
 	setenv("board_rev", "v0");
