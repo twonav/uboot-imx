@@ -152,7 +152,8 @@
 		"logo.hwtype=${hwtype} " \
 		"fsck.repair=yes " \
 		"roofstype=ext4 " \
-		"u-boot="UBOOT_VERSION"-"TWONAV_DEVICE"\0" \
+		"u-boot="UBOOT_VERSION"-"TWONAV_DEVICE" " \
+		"panic=30\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
