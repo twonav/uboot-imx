@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "v1.2.5"
+#define UBOOT_VERSION "v1.2.6"
 #define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
