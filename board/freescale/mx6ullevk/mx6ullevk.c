@@ -901,11 +901,14 @@ static const struct boot_mode board_boot_modes[] = {
 #define BOOT_MODE_KEY_5_2		IMX_GPIO_NR(5, 2)
 #define BOOT_MODE_KEY_5_3		IMX_GPIO_NR(5, 3)
 #define BOOT_MODE_KEY_5_4		IMX_GPIO_NR(5, 4)
+#define BOOT_MODE_KEY_5_5		IMX_GPIO_NR(5, 5)
 
 #define ID_TERRA		"terra"
 #define ID_TRAILPLUS	"trailplus"
 #define ID_CROSSTOP		"crosstop"
+#define ID_CROSSPLUS	"crossplus"
 #define ID_AVENTURA		"aventura"
+#define ID_AVENTURAPLUS	"aventuraplus"
 #define ID_TRAIL		"trail"
 #define ID_FACTORY		"factory"
 
@@ -920,13 +923,16 @@ void SelectBootMode(void)
 	int key52 = !gpio_get_value(BOOT_MODE_KEY_5_2);
 	int key53 = !gpio_get_value(BOOT_MODE_KEY_5_3);
 	int key54 = !gpio_get_value(BOOT_MODE_KEY_5_4);
+	int key55 = !gpio_get_value(BOOT_MODE_KEY_5_5);
 	
 	bool bootmode = (key21 && key51 && (!key52));
-	bool crosstopmode = (key21 | key51);
+	bool crosstopmode = (key21 && !key51);
+	bool crossplusmode = (!key21 && key51);
 	bool terramode = key52;
 	bool trailmode = key53 && !key54;
 	bool trailplusmode = key54 && !key53;
-	bool aventuramode = (!crosstopmode && !trailmode && !terramode);
+	bool aventuramode = (!crosstopmode && !trailmode && !terramode && !key55);
+	bool aventuraplusmode = (!crosstopmode && !trailmode && !terramode && key55);
 
 	usb_drive_boot = (key21 && key51 && key52);
 
@@ -944,11 +950,13 @@ void SelectBootMode(void)
 
 			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {	
 				
-				if(crosstopmode) 		id = ID_CROSSTOP;		
-				else if(terramode)		id = ID_TERRA;
-				else if(trailmode)		id = ID_TRAIL;
-				else if(trailplusmode)	id = ID_TRAILPLUS;
-				else 					id = ID_AVENTURA;
+				if(crosstopmode) 			id = ID_CROSSTOP;
+				else if(crossplusmode)		id = ID_CROSSPLUS;
+				else if(terramode)			id = ID_TERRA;
+				else if(trailmode)			id = ID_TRAIL;
+				else if(trailplusmode)		id = ID_TRAILPLUS;
+				else if(aventuraplusmode)		id = ID_AVENTURAPLUS;
+				else 						id = ID_AVENTURA;
 
 				sprintf(tndev, "twonav-%s-2018", id);
 			}
