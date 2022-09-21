@@ -147,6 +147,7 @@ static enum qn_func qn_output[8] = {
 	qn_disable, qn_disable
 };
 
+
 static void iox74lv_init(void)
 {
 	int i;
@@ -524,6 +525,7 @@ int board_mmc_getcd(struct mmc *mmc)
 
 		imx_iomux_v3_setup_multiple_pads(usdhc2_dat3_pads,
 						 ARRAY_SIZE(usdhc2_dat3_pads));
+		
 #endif
 		break;
 	}
@@ -912,10 +914,9 @@ static const struct boot_mode board_boot_modes[] = {
 #define ID_TRAIL		"trail"
 #define ID_FACTORY		"factory"
 
+bool twonav_usb_drive_boot = false;
 
-static bool usb_drive_boot = false;
-
-void SelectBootMode(void) 
+void twonav_setenv_boot_mode(void) 
 {
 	int key20 = !gpio_get_value(BOOT_MODE_KEY_2_0);
 	int key21 = !gpio_get_value(BOOT_MODE_KEY_2_1);
@@ -934,7 +935,7 @@ void SelectBootMode(void)
 	bool aventuramode = (!crosstopmode && !trailmode && !terramode && !key55);
 	bool aventuraplusmode = (!crosstopmode && !trailmode && !terramode && key55);
 
-	usb_drive_boot = (key21 && key51 && key52);
+	twonav_usb_drive_boot = (key21 && key51 && key52);
 
 	if(bootmode) {
 		boot_mode_apply(0x01);
@@ -973,19 +974,17 @@ void SelectBootMode(void)
 	#endif
 }
 
-int board_late_init(void)
-{
+void twonav_setenv_mmc_name(void) {
+	char mmc_name[16] = {'n','u','l','l', 0 , 0} ;
+	struct mmc *mymmc = find_mmc_device(1);
+	if(mymmc) {
+		mmc_get_name(mymmc,mmc_name);
+		setenv("mmc_name", mmc_name);
+	}
+}
 
-	SelectBootMode();
-
-#ifdef CONFIG_CMD_BMODE
-	add_board_boot_modes(board_boot_modes);
-#endif
-
-#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-	setenv("board_name", "STONEHENGE");
-
-	if(usb_drive_boot) {
+void twonav_setenv_usb_drive_boot(void) {
+	if(twonav_usb_drive_boot) {
 		printf("Booting from Usb Drive 0:1. rootfs on /dev/sda2 \n");
 		setenv("tnrootpart","/dev/sda2 rootwait ro");
 		setenv("loadimage", "usb start;ext4load usb 0:1 ${loadaddr} ${image}");
@@ -994,17 +993,29 @@ int board_late_init(void)
 	else {
 		setenv("tnrootpart","/dev/mmcblk1p2 rootwait ro");
 	}
+}
 
+int board_late_init(void)
+{
+	twonav_setenv_boot_mode();
+	
+#ifdef CONFIG_CMD_BMODE
+	add_board_boot_modes(board_boot_modes);
+#endif
+
+	twonav_setenv_mmc_name();
+	twonav_setenv_usb_drive_boot();
+
+#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+	setenv("board_name", "STONEHENGE");	
 	setenv("rootfstype","ext4");
 	setenv("fsck.repair","yes");
 	setenv("board_rev", "v0");
 #endif
 
-
-#ifdef CONFIG_ENV_IS_IN_MMC
-	board_late_mmc_env_init();
-#endif
-
+	#ifdef CONFIG_ENV_IS_IN_MMC
+		board_late_mmc_env_init();
+	#endif
 
 	set_wdog_reset((struct wdog_regs *)WDOG1_BASE_ADDR);
 

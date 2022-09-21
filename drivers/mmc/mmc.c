@@ -2028,4 +2028,15 @@ int mmc_set_rst_n_function(struct mmc *mmc, u8 enable)
 	return mmc_switch(mmc, EXT_CSD_CMD_SET_NORMAL, EXT_CSD_RST_N_FUNCTION,
 			  enable);
 }
+
+void mmc_get_name(struct mmc *mmc, char* name) {
+	sprintf(name, "%c%c%c%c%c%c", 
+		mmc->cid[0] & 0xff,
+		(mmc->cid[1] >> 24) & 0xff,
+		(mmc->cid[1] >> 16) & 0xff,
+		(mmc->cid[1] >> 8) & 0xff, 
+		mmc->cid[1] & 0xff,
+		(mmc->cid[2] >> 24) &0xff);
+}
+
 #endif
