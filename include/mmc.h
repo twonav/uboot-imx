@@ -489,6 +489,7 @@ int board_mmc_init(bd_t *bis);
 int cpu_mmc_init(bd_t *bis);
 int mmc_get_env_addr(struct mmc *mmc, int copy, u32 *env_addr);
 int mmc_get_env_dev(void);
+void mmc_get_name(struct mmc *mmc, char* name);
 
 struct pci_device_id;
 
