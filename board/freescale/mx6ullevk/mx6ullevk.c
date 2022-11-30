@@ -905,13 +905,14 @@ static const struct boot_mode board_boot_modes[] = {
 #define BOOT_MODE_KEY_5_4		IMX_GPIO_NR(5, 4)
 #define BOOT_MODE_KEY_5_5		IMX_GPIO_NR(5, 5)
 
-#define ID_TERRA		"terra"
-#define ID_TRAILPLUS	"trailplus"
-#define ID_CROSSTOP		"crosstop"
-#define ID_CROSSPLUS	"crossplus"
 #define ID_AVENTURA		"aventura"
 #define ID_AVENTURAPLUS	"aventuraplus"
+#define ID_CROSSTOP		"crosstop"
+#define ID_CROSSPLUS	"crossplus"
+#define ID_ROC			"roc"
+#define ID_TERRA		"terra"
 #define ID_TRAIL		"trail"
+#define ID_TRAILPLUS	"trailplus"
 #define ID_FACTORY		"factory"
 
 bool twonav_usb_drive_boot = false;
@@ -934,6 +935,7 @@ void twonav_setenv_boot_mode(void)
 	bool trailplusmode = key54 && !key53;
 	bool aventuramode = (!crosstopmode && !trailmode && !terramode && !key55);
 	bool aventuraplusmode = (!crosstopmode && !trailmode && !terramode && key55);
+	bool rocmode = (key20 && key51);
 
 	twonav_usb_drive_boot = (key21 && key51 && key52);
 
@@ -953,10 +955,11 @@ void twonav_setenv_boot_mode(void)
 				
 				if(crosstopmode) 			id = ID_CROSSTOP;
 				else if(crossplusmode)		id = ID_CROSSPLUS;
+				else if(rocmode)			id = ID_ROC;
 				else if(terramode)			id = ID_TERRA;
 				else if(trailmode)			id = ID_TRAIL;
 				else if(trailplusmode)		id = ID_TRAILPLUS;
-				else if(aventuraplusmode)		id = ID_AVENTURAPLUS;
+				else if(aventuraplusmode)	id = ID_AVENTURAPLUS;
 				else 						id = ID_AVENTURA;
 
 				sprintf(tndev, "twonav-%s-2018", id);
