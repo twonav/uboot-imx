@@ -408,6 +408,7 @@ static void setup_iomux_uart(void)
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
+#define ROC_EN_BUZZER 	IMX_GPIO_NR(1, 11)
 #define BUZZER_TIME_MS 70
 #define BUZZER_DUTTY_CYCLE_NS 200000
 #define BUZZER_PERIOD_NS 250000
@@ -415,6 +416,7 @@ static void setup_iomux_uart(void)
 
 static void buzzer_beep(void)
 {
+	gpio_direction_output(ROC_EN_BUZZER, 1);
 	imx_iomux_v3_setup_multiple_pads(buzzer_pads,ARRAY_SIZE(buzzer_pads));
 	if (pwm_init(BUZZER_ID, 0, 0))
 		goto error;
@@ -424,12 +426,13 @@ static void buzzer_beep(void)
 		goto error;
 	mdelay(BUZZER_TIME_MS);
 	pwm_disable(BUZZER_ID);
+	gpio_direction_output(ROC_EN_BUZZER, 0);
 	return;
 error:
 	puts("error init pwm for buzzer\n");
 	return;
-}
-
+}      
+ 
 #define WLAN_WL_ENABLE 	IMX_GPIO_NR(1, 29)
 #define WLAN_BT_ENABLE 	IMX_GPIO_NR(1, 30)
 #define WLAN_SWITCH 	IMX_GPIO_NR(1, 31)
@@ -440,7 +443,7 @@ static void setup_gpios(void)
 	gpio_direction_output(WLAN_WL_ENABLE, 0);
 	gpio_direction_output(WLAN_BT_ENABLE, 0);
 	gpio_direction_output(WLAN_SWITCH, 0);
-	gpio_direction_output(RESET_TOUCH, 1);
+	gpio_direction_output(RESET_TOUCH, 1);	
 }
 
 #ifdef CONFIG_FSL_QSPI
