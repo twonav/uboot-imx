@@ -938,7 +938,7 @@ void twonav_setenv_boot_mode(void)
 	bool trailplusmode = key54 && !key53;
 	bool aventuramode = (!crosstopmode && !trailmode && !terramode && !key55);
 	bool aventuraplusmode = (!crosstopmode && !trailmode && !terramode && key55);
-	bool rocmode = (key20 && key51);
+	bool rocmode = (key51 && key52);
 
 	twonav_usb_drive_boot = (key21 && key51 && key52);
 
