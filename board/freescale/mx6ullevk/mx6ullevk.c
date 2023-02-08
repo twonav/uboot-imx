@@ -922,7 +922,7 @@ bool twonav_usb_drive_boot = false;
 
 void twonav_setenv_boot_mode(void) 
 {
-	int key20 = !gpio_get_value(BOOT_MODE_KEY_2_0);
+	// int key20 = !gpio_get_value(BOOT_MODE_KEY_2_0); // power buttton - cannot be used
 	int key21 = !gpio_get_value(BOOT_MODE_KEY_2_1);
 	int key51 = !gpio_get_value(BOOT_MODE_KEY_5_1);
 	int key52 = !gpio_get_value(BOOT_MODE_KEY_5_2);
@@ -930,17 +930,34 @@ void twonav_setenv_boot_mode(void)
 	int key54 = !gpio_get_value(BOOT_MODE_KEY_5_4);
 	int key55 = !gpio_get_value(BOOT_MODE_KEY_5_5);
 	
-	bool bootmode = (key21 && key51 && (!key52));
-	bool crosstopmode = (key21 && !key51);
-	bool crossplusmode = (!key21 && key51);
-	bool terramode = key52;
-	bool trailmode = key53 && !key54;
-	bool trailplusmode = key54 && !key53;
-	bool aventuramode = (!crosstopmode && !trailmode && !terramode && !key55);
-	bool aventuraplusmode = (!crosstopmode && !trailmode && !terramode && key55);
-	bool rocmode = (key51 && key52);
+	/* 					PRODUCT SELECTION via BUTTONS
+				| key21	| key51	| key52	| key53	| key54	| key55 |
+	-------------------------------------------------------------
+	AVENTURA 	|   0	| 	0	|	0	|	0	|	0	| 	- 	|
+	AVENTURA+	|   0	| 	0	|	0	|	0	|	0	| 	1 	|
+	CROSS		|   1	| 	0	|	0	|	0	|	0	| 	- 	|
+	CROSS+		|   0	| 	1	|	0	|	0	|	0	| 	- 	|
+	TERRA		|   0	| 	0	|	1	|	0	|	0	| 	- 	|
+	TRAIL		|   0	| 	0	|	0	|	1	|	0	| 	- 	|
+	TRAIL2+		|   0	| 	0	|	0	|	0	|	1	| 	- 	|
+	BOOTMODE 	|   1 	| 	1	|	0	|	0	|	0	| 	- 	|
+	USBMODE 	|   1	| 	1	|	1	|	0	|	0	| 	- 	|
+	ROC	    	|   0	| 	1	|	1	|	0	|	0	| 	- 	|
 
-	twonav_usb_drive_boot = (key21 && key51 && key52);
+	NOTE: key55 can only be used if it is routed physically, otherwise we cannot "trust" its value
+	*/
+
+	bool aventuramode 		= ((!key21) && (!key51) && (!key52) && (!key53) && (!key54));
+	bool aventuraplusmode 	= ((!key21) && (!key51) && (!key52) && (!key53) && (!key54) && (key55));
+	bool crosstopmode 		= (( key21) && (!key51) && (!key52) && (!key53) && (!key54));
+	bool crossplusmode 		= ((!key21) && ( key51) && (!key52) && (!key53) && (!key54));
+	bool terramode 			= ((!key21) && (!key51) && ( key52) && (!key53) && (!key54));
+	bool trailmode 			= ((!key21) && (!key51) && (!key52) && ( key53) && (!key54));
+	bool trailplusmode 		= ((!key21) && (!key51) && (!key52) && (!key53) && ( key54));
+	bool bootmode 			= (( key21) && ( key51) && (!key52) && (!key53) && (!key54));
+	bool rocmode 			= ((!key21) && ( key51) && ( key52) && (!key53) && (!key54));
+	twonav_usb_drive_boot	= (( key21) && ( key51) && ( key52) && (!key53) && (!key54));
+
 
 	if(bootmode) {
 		boot_mode_apply(0x01);
