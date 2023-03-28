@@ -935,28 +935,28 @@ void twonav_setenv_boot_mode(void)
 	-------------------------------------------------------------
 	AVENTURA 	|   0	| 	0	|	0	|	0	|	0	| 	- 	|
 	AVENTURA+	|   0	| 	0	|	0	|	0	|	0	| 	1 	|
-	CROSS		|   1	| 	0	|	0	|	0	|	0	| 	- 	|
-	CROSS+		|   0	| 	1	|	0	|	0	|	0	| 	- 	|
-	TERRA		|   0	| 	0	|	1	|	0	|	0	| 	- 	|
+	CROSS		|   1	| 	0	|	0	|	-	|	-	| 	- 	|
+	CROSS+		|   0	| 	1	|	0	|	-	|	-	| 	- 	|
+	TERRA		|   0	| 	0	|	1	|	-	|	-	| 	- 	|
 	TRAIL		|   0	| 	0	|	0	|	1	|	0	| 	- 	|
 	TRAIL2+		|   0	| 	0	|	0	|	0	|	1	| 	- 	|
-	BOOTMODE 	|   1 	| 	1	|	0	|	0	|	0	| 	- 	|
-	USBMODE 	|   1	| 	1	|	1	|	0	|	0	| 	- 	|
-	ROC	    	|   0	| 	1	|	1	|	0	|	0	| 	- 	|
+	BOOTMODE 	|   1 	| 	1	|	0	|	-	|	-	| 	- 	|
+	USBMODE 	|   1	| 	1	|	1	|	-	|	-	| 	- 	|
+	ROC	    	|   0	| 	1	|	1	|	-	|	-	| 	- 	|
 
 	NOTE: key55 can only be used if it is routed physically, otherwise we cannot "trust" its value
 	*/
 
 	bool aventuramode 		= ((!key21) && (!key51) && (!key52) && (!key53) && (!key54));
 	bool aventuraplusmode 	= ((!key21) && (!key51) && (!key52) && (!key53) && (!key54) && (key55));
-	bool crosstopmode 		= (( key21) && (!key51) && (!key52) && (!key53) && (!key54));
-	bool crossplusmode 		= ((!key21) && ( key51) && (!key52) && (!key53) && (!key54));
-	bool terramode 			= ((!key21) && (!key51) && ( key52) && (!key53) && (!key54));
+	bool crosstopmode 		= (( key21) && (!key51) && (!key52));
+	bool crossplusmode 		= ((!key21) && ( key51) && (!key52));
+	bool terramode 			= ((!key21) && (!key51) && ( key52));
 	bool trailmode 			= ((!key21) && (!key51) && (!key52) && ( key53) && (!key54));
 	bool trailplusmode 		= ((!key21) && (!key51) && (!key52) && (!key53) && ( key54));
-	bool bootmode 			= (( key21) && ( key51) && (!key52) && (!key53) && (!key54));
-	bool rocmode 			= ((!key21) && ( key51) && ( key52) && (!key53) && (!key54));
-	twonav_usb_drive_boot	= (( key21) && ( key51) && ( key52) && (!key53) && (!key54));
+	bool bootmode 			= (( key21) && ( key51) && (!key52));
+	bool rocmode 			= ((!key21) && ( key51) && ( key52));
+	twonav_usb_drive_boot	= (( key21) && ( key51) && ( key52));
 
 
 	if(bootmode) {
