@@ -152,7 +152,6 @@
 		"bd7181x-power.battery_type=${battery_type} " \
 		"bd7181x-power.mmc_name=${mmc_name} " \
 		"logo.hwtype=${hwtype} " \
-		"cyttsp5.hwtype=${hwtype} " \
 		"fsck.repair=yes " \
 		"rootfstype=ext4 " \
 		"u-boot="UBOOT_VERSION"-"TWONAV_DEVICE" " \
