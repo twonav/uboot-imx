@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "v1.2.12"
+#define UBOOT_VERSION "v1.2.13"
 #define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
@@ -149,10 +149,12 @@
 		"root=${tnrootpart} " \
 		"consoleblank=0 vt.global_cursor_default=0 " \
 		"bd7181x-power.hwtype=${hwtype} " \
+		"bd7181x-power.battery_type=${battery_type} " \
 		"bd7181x-power.mmc_name=${mmc_name} " \
 		"logo.hwtype=${hwtype} " \
+		"cyttsp5.hwtype=${hwtype} " \
 		"fsck.repair=yes " \
-		"roofstype=ext4 " \
+		"rootfstype=ext4 " \
 		"u-boot="UBOOT_VERSION"-"TWONAV_DEVICE" " \
 		"panic=30\0" \
 	"loadbootscript=" \
