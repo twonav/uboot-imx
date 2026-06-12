@@ -971,31 +971,45 @@ void twonav_setenv_boot_mode(void)
 		#ifdef TWONAV_DEVICE
 			char tndev [64];
 			char dtb_file [64];
+			char uboot [64];
 			const char* id = NULL;
-			const char* battery_type = "default";
 
-			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {	
-
+			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {
 				if(crosstopmode) 			id = ID_CROSSTOP;
 				else if(crossplusmode)		id = ID_CROSSPLUS;
 				else if(rocmode)			id = ID_ROC;
 				else if(terramode)			id = ID_TERRA;
-				else if(terra2mode)			{id = ID_TERRA; battery_type = "motoma-3V8";}
+				else if(terra2mode)			id = ID_TERRA;
 				else if(trailmode)			id = ID_TRAIL;
 				else if(trailplusmode)		id = ID_TRAILPLUS;
 				else if(aventuraplusmode)	id = ID_AVENTURAPLUS;
 				else 						id = ID_AVENTURA;
 
 				sprintf(tndev, "twonav-%s-2018", id);
+
+				if (terra2mode) {
+					setenv("battery_type", "motoma-3V8");
+				}
+
+				sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
+				setenv("fdt_file", dtb_file);
+				setenv("hwtype", tndev);
+
+				sprintf(uboot, "%s-%s", UBOOT_VERSION, tndev);
+				setenv("u-boot", uboot);
+				setenv("test", "testvalue");
+				printf("Baptising device as: %s\n", tndev);
+				saveenv();
 			}
 			else {
 				sprintf(tndev, TWONAV_DEVICE);
-			}		
-			sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
-
-			setenv("fdt_file", dtb_file);
-			setenv("hwtype", tndev);
-			setenv("battery_type", battery_type);
+				sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
+				setenv("fdt_file", dtb_file);
+				setenv("hwtype", tndev);
+				sprintf(uboot, "%s-%s", UBOOT_VERSION, tndev);
+				setenv("u-boot", uboot);
+				setenv("test", "testvalue2");
+			}
 		#else			
 			setenv("hwtype", "unknown");		
 		#endif

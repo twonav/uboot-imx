@@ -154,7 +154,8 @@
 		"logo.hwtype=${hwtype} " \
 		"fsck.repair=yes " \
 		"rootfstype=ext4 " \
-		"u-boot="UBOOT_VERSION"-"TWONAV_DEVICE" " \
+		"u-boot=${u-boot} " \
+		"test=${test} " \
 		"panic=30\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
