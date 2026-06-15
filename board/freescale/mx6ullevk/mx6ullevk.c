@@ -914,10 +914,13 @@ static const struct boot_mode board_boot_modes[] = {
 #define ID_CROSSPLUS	"crossplus"
 #define ID_ROC			"roc"
 #define ID_TERRA		"terra"
-#define ID_TERRA2		"terra2"
 #define ID_TRAIL		"trail"
 #define ID_TRAILPLUS	"trailplus"
 #define ID_FACTORY		"factory"
+
+#define TWONAV_DEVICE_TERRA2		"twonav-terra2-2018"
+#define BATTERY_TYPE_DEFAULT		"default"
+#define BATTERY_TYPE_MOTOMA_3V8		"motoma-3v8"
 
 bool twonav_usb_drive_boot = false;
 
@@ -939,7 +942,7 @@ void twonav_setenv_boot_mode(void)
 	CROSS		|   1	| 	0	|	0	|	-	|	-	| 	- 	|
 	CROSS+		|   0	| 	1	|	0	|	-	|	-	| 	- 	|
 	TERRA		|   0	| 	0	|	1	|	-	|	-	| 	- 	|
-	TERRA2		|   1	| 	0	|	1	|	-	|	-	| 	- 	|
+	FREE		|   1	| 	0	|	1	|	-	|	-	| 	- 	|
 	TRAIL		|   0	| 	0	|	0	|	1	|	0	| 	- 	|
 	TRAIL2+		|   0	| 	0	|	0	|	0	|	1	| 	- 	|
 	BOOTMODE 	|   1 	| 	1	|	0	|	-	|	-	| 	- 	|
@@ -954,7 +957,6 @@ void twonav_setenv_boot_mode(void)
 	bool crosstopmode 		= (( key21) && (!key51) && (!key52));
 	bool crossplusmode 		= ((!key21) && ( key51) && (!key52));
 	bool terramode 			= ((!key21) && (!key51) && ( key52));
-	bool terra2mode 		= (( key21) && (!key51) && ( key52));
 	bool trailmode 			= ((!key21) && (!key51) && (!key52) && ( key53) && (!key54));
 	bool trailplusmode 		= ((!key21) && (!key51) && (!key52) && (!key53) && ( key54));
 	bool bootmode 			= (( key21) && ( key51) && (!key52));
@@ -973,38 +975,37 @@ void twonav_setenv_boot_mode(void)
 			char tndev [64];
 			char dtb_file [64];
 			char uboot_version[64];
-			const char* id = NULL;
-			const char* battery_type = "default";
+			const char *battery_type = BATTERY_TYPE_DEFAULT;
+			bool factory_mode = strstr(TWONAV_DEVICE, ID_FACTORY) != NULL;
 
-			if(strstr(TWONAV_DEVICE, ID_FACTORY) != NULL) {	
-
+			if(factory_mode) {
+				const char * id = NULL;
 				if(crosstopmode) 			id = ID_CROSSTOP;
 				else if(crossplusmode)		id = ID_CROSSPLUS;
 				else if(rocmode)			id = ID_ROC;
 				else if(terramode)			id = ID_TERRA;
-				else if(terra2mode)			{id = ID_TERRA; battery_type = "motoma-3V8";}
 				else if(trailmode)			id = ID_TRAIL;
 				else if(trailplusmode)		id = ID_TRAILPLUS;
 				else if(aventuraplusmode)	id = ID_AVENTURAPLUS;
 				else 						id = ID_AVENTURA;
 
-				sprintf(tndev, "twonav-%s-2018", id);
+				snprintf(tndev, sizeof(tndev), "twonav-%s-2018", id);
+				snprintf(uboot_version, sizeof(uboot_version), "%s-%s", UBOOT_VERSION, TWONAV_DEVICE);
+			}
+			else if (strstr(TWONAV_DEVICE, TWONAV_DEVICE_TERRA2) != NULL) {
+				battery_type = BATTERY_TYPE_MOTOMA_3V8;
+				snprintf(tndev, sizeof(tndev), "twonav-%s-2018", ID_TERRA);
+				snprintf(uboot_version, sizeof(uboot_version), "%s-%s",	UBOOT_VERSION, tndev);
 			}
 			else {
-				if (strstr(TWONAV_DEVICE, "twonav-terra2-2018") != NULL) {
-					battery_type = "motoma-3V8";
-					sprintf(tndev, "twonav-terra-2018");
-				}
-				else
-					sprintf(tndev, TWONAV_DEVICE);
+				snprintf(tndev, sizeof(tndev), "%s", TWONAV_DEVICE);
+				snprintf(uboot_version, sizeof(uboot_version), "%s-%s",	UBOOT_VERSION, tndev);
 			}
 
-			setenv("battery_type", battery_type);
-			sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
+			snprintf(dtb_file, sizeof(dtb_file), "imx6ull-var-dart-%s.dtb", tndev);
 			setenv("fdt_file", dtb_file);
 			setenv("hwtype", tndev);
-			sprintf(uboot_version, "%s-%s", UBOOT_VERSION, tndev);
-			setenv("uboot_version", uboot_version);
+			setenv("battery_type", battery_type);
 		#else			
 			setenv("hwtype", "unknown");		
 		#endif
