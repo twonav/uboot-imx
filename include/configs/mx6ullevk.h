@@ -14,7 +14,7 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define UBOOT_VERSION "v1.2.13"
+#define UBOOT_VERSION "v1.2.14"
 #define CONFIG_VERSION_VARIABLE
 
 /* uncomment for PLUGIN mode support */
@@ -144,6 +144,7 @@
 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 	"mmcautodetect=yes\0" \
+	"uboot_version=" UBOOT_VERSION "-" TWONAV_DEVICE "\0" \
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		CONFIG_BOOTARGS_CMA_SIZE \
 		"root=${tnrootpart} " \
@@ -155,7 +156,7 @@
 		"cyttsp5.hwtype=${hwtype} " \
 		"fsck.repair=yes " \
 		"rootfstype=ext4 " \
-		"u-boot="UBOOT_VERSION"-"TWONAV_DEVICE" " \
+		"u-boot=${uboot_version} " \
 		"panic=30\0" \
 	"loadbootscript=" \
 		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \

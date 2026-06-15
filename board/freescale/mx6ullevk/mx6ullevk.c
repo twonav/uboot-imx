@@ -914,6 +914,7 @@ static const struct boot_mode board_boot_modes[] = {
 #define ID_CROSSPLUS	"crossplus"
 #define ID_ROC			"roc"
 #define ID_TERRA		"terra"
+#define ID_TERRA2		"terra2"
 #define ID_TRAIL		"trail"
 #define ID_TRAILPLUS	"trailplus"
 #define ID_FACTORY		"factory"
@@ -971,6 +972,7 @@ void twonav_setenv_boot_mode(void)
 		#ifdef TWONAV_DEVICE
 			char tndev [64];
 			char dtb_file [64];
+			char uboot_version[64];
 			const char* id = NULL;
 			const char* battery_type = "default";
 
@@ -989,13 +991,20 @@ void twonav_setenv_boot_mode(void)
 				sprintf(tndev, "twonav-%s-2018", id);
 			}
 			else {
-				sprintf(tndev, TWONAV_DEVICE);
-			}		
-			sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
+				if (strstr(TWONAV_DEVICE, "twonav-terra2-2018") != NULL) {
+					battery_type = "motoma-3V8";
+					sprintf(tndev, "twonav-terra-2018");
+				}
+				else
+					sprintf(tndev, TWONAV_DEVICE);
+			}
 
+			setenv("battery_type", battery_type);
+			sprintf(dtb_file, "imx6ull-var-dart-%s.dtb", tndev);
 			setenv("fdt_file", dtb_file);
 			setenv("hwtype", tndev);
-			setenv("battery_type", battery_type);
+			sprintf(uboot_version, "%s-%s", UBOOT_VERSION, tndev);
+			setenv("uboot_version", uboot_version);
 		#else			
 			setenv("hwtype", "unknown");		
 		#endif
